@@ -10,6 +10,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var bookmark models.Bookmark
+
 // BookmarkRepository represents the tag's repository contract.
 type BookmarkRepository struct {
 	Conn *gorm.DB
@@ -38,8 +40,6 @@ func (r *BookmarkRepository) List(tagNames []string) ([]models.Bookmark, error) 
 
 // Add bookmark
 func (r *BookmarkRepository) Add(url string, title string, tags []string) (*models.Bookmark, error) {
-	// TODO: make validations
-
 	url = strings.TrimSpace(url)
 	title = strings.TrimSpace(title)
 	if len(title) == 0 {
@@ -54,17 +54,15 @@ func (r *BookmarkRepository) Add(url string, title string, tags []string) (*mode
 
 	tx := r.Conn.Begin()
 
-	for _, tag := range tags {
-		var tagModel models.Tag
+	if len(tags) > 0 {
+		tagModels, err := findOrCreateTags(tags, tx)
 
-		tagName := normalizedTagName(tag)
-
-		if err := tx.FirstOrCreate(&tagModel, models.Tag{Name: tagName}).Error; err != nil {
+		if err != nil {
 			tx.Rollback()
 			return nil, err
 		}
 
-		bookmark.Tags = append(bookmark.Tags, tagModel)
+		bookmark.Tags = tagModels
 	}
 
 	if !bookmark.IsValid() {
@@ -82,10 +80,54 @@ func (r *BookmarkRepository) Add(url string, title string, tags []string) (*mode
 	return &bookmark, nil
 }
 
+// Update bookmark
+func (r *BookmarkRepository) Update(url string, newURL string, title string, tags []string) (*models.Bookmark, error) {
+	newURL = strings.TrimSpace(newURL)
+	title = strings.TrimSpace(title)
+
+	tx := r.Conn.Begin()
+
+	tx.Where("url = ?", url).First(&bookmark)
+
+	if len(newURL) > 0 {
+		bookmark.URL = newURL
+	}
+
+	if len(title) > 0 {
+		bookmark.Title = title
+	}
+
+	if len(tags) > 0 {
+		tagModels, err := findOrCreateTags(tags, tx)
+
+		if err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		if err := tx.Model(&bookmark).Association("Tags").Replace(tagModels).Error; err != nil {
+			tx.Rollback()
+			return &bookmark, err
+		}
+	}
+
+	if !bookmark.IsValid() {
+		tx.Rollback()
+		return &bookmark, errors.New("Bookmark is invalid")
+	}
+
+	if err := tx.Save(&bookmark).Error; err != nil {
+		tx.Rollback()
+		return &bookmark, err
+	}
+
+	tx.Commit()
+
+	return &bookmark, nil
+}
+
 // DeleteByURL removes bookmark and clear not active tags
 func (r *BookmarkRepository) DeleteByURL(url string) (err error) {
-	var bookmark models.Bookmark
-
 	tx := r.Conn.Begin()
 
 	tx.Where("url = ?", url).First(&bookmark)
@@ -109,4 +151,21 @@ func normalizedTagName(name string) string {
 	name = strings.ToLower(name)
 
 	return name
+}
+
+func findOrCreateTags(tags []string, tx *gorm.DB) (tagModels []models.Tag, err error) {
+	for _, tag := range tags {
+		var tagModel models.Tag
+
+		tagName := normalizedTagName(tag)
+
+		if err = tx.FirstOrCreate(&tagModel, models.Tag{Name: tagName}).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		tagModels = append(tagModels, tagModel)
+	}
+
+	return
 }
