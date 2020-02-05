@@ -9,7 +9,7 @@ import (
 func setupCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "setup",
-		Short: "Setup Bookmark database",
+		Short: "Setup Bookmark database. For present DB - it will updated",
 		Run:   setupCmdHandler,
 	}
 

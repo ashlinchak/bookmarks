@@ -13,6 +13,7 @@ type Bookmark struct {
 	Title        string                         `json:"title"      gorm:"column:title"`
 	CreateatedAt time.Time                      `json:"createdAt"  gorm:"column:created_at;not null"`
 	Tags         []Tag                          `json:"tags"       gorm:"many2many:bookmarks_tags;"`
+	Notes        string                         `json:"notes"      gorm:"column:notes"`
 	Errors       []validators.ValidationMessage `json:"-"          gorm:"-"`
 }
 

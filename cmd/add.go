@@ -20,6 +20,7 @@ func addCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("title", "i", "", "Title for the bookmark. If you don't specify the title it will be set from the HTML page title tag")
+	cmd.Flags().StringP("notes", "n", "", "Notes for the bookmark")
 	cmd.Flags().StringSliceP("tags", "t", []string{}, "Comma-separated tags for the bookmark. E.g. \"tag, second tag\"")
 
 	return cmd
@@ -34,6 +35,7 @@ func addCmdHandler(cmd *cobra.Command, args []string) {
 
 	url := args[0]
 	title, _ := cmd.Flags().GetString("title")
+	notes, _ := cmd.Flags().GetString("notes")
 	tags, _ := cmd.Flags().GetStringSlice("tags")
 
 	if len(title) == 0 {
@@ -43,7 +45,7 @@ func addCmdHandler(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	bookmark, err := db.BookmarkRepository.Add(url, title, tags)
+	bookmark, err := db.BookmarkRepository.Add(url, title, tags, notes)
 	defer db.Conn.Close()
 
 	if err != nil {

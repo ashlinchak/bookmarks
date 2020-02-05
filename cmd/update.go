@@ -34,8 +34,9 @@ func updateCmdHandler(cmd *cobra.Command, args []string) {
 	newURL, _ := cmd.Flags().GetString("url")
 	title, _ := cmd.Flags().GetString("title")
 	tags, _ := cmd.Flags().GetStringSlice("tags")
+	notes, _ := cmd.Flags().GetString("notes")
 
-	bookmark, err := db.BookmarkRepository.Update(url, newURL, title, tags)
+	bookmark, err := db.BookmarkRepository.Update(url, newURL, title, tags, notes)
 
 	if err != nil {
 		if len(bookmark.Errors) > 0 {

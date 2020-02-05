@@ -76,4 +76,7 @@ func print(n int, b *models.Bookmark) {
 		tagNames = append(tagNames, tag.Name)
 	}
 	fmt.Printf("   # %v\n", strings.Join(tagNames, ", "))
+
+	// Notes
+	fmt.Printf("   %v\n", b.Notes)
 }

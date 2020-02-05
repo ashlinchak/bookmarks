@@ -39,9 +39,11 @@ func (r *BookmarkRepository) List(tagNames []string) ([]models.Bookmark, error) 
 }
 
 // Add bookmark
-func (r *BookmarkRepository) Add(url string, title string, tags []string) (*models.Bookmark, error) {
+func (r *BookmarkRepository) Add(url string, title string, tags []string, notes string) (*models.Bookmark, error) {
 	url = strings.TrimSpace(url)
 	title = strings.TrimSpace(title)
+	notes = strings.TrimSpace(notes)
+
 	if len(title) == 0 {
 		title = url
 	}
@@ -49,6 +51,7 @@ func (r *BookmarkRepository) Add(url string, title string, tags []string) (*mode
 	bookmark := models.Bookmark{
 		URL:          url,
 		Title:        title,
+		Notes:        notes,
 		CreateatedAt: time.Now(),
 	}
 
@@ -81,9 +84,10 @@ func (r *BookmarkRepository) Add(url string, title string, tags []string) (*mode
 }
 
 // Update bookmark
-func (r *BookmarkRepository) Update(url string, newURL string, title string, tags []string) (*models.Bookmark, error) {
+func (r *BookmarkRepository) Update(url string, newURL string, title string, tags []string, notes string) (*models.Bookmark, error) {
 	newURL = strings.TrimSpace(newURL)
 	title = strings.TrimSpace(title)
+	notes = strings.TrimSpace(notes)
 
 	tx := r.Conn.Begin()
 
@@ -95,6 +99,10 @@ func (r *BookmarkRepository) Update(url string, newURL string, title string, tag
 
 	if len(title) > 0 {
 		bookmark.Title = title
+	}
+
+	if len(notes) > 0 {
+		bookmark.Notes = notes
 	}
 
 	if len(tags) > 0 {
