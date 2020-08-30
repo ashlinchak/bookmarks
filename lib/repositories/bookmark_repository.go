@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ashlinchak/bookmarks/lib/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var bookmark models.Bookmark
@@ -113,7 +113,7 @@ func (r *BookmarkRepository) Update(url string, newURL string, title string, tag
 			return nil, err
 		}
 
-		if err := tx.Model(&bookmark).Association("Tags").Replace(tagModels).Error; err != nil {
+		if err := tx.Model(&bookmark).Association("Tags").Replace(tagModels); err != nil {
 			tx.Rollback()
 			return &bookmark, err
 		}

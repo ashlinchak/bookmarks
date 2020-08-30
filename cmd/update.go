@@ -47,11 +47,8 @@ func updateCmdHandler(cmd *cobra.Command, args []string) {
 			fmt.Println(err)
 		}
 
-		defer db.Conn.Close()
 		return
 	}
-
-	defer db.Conn.Close()
 
 	fmt.Println("1 bookmark updated.")
 }
