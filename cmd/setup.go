@@ -23,6 +23,4 @@ func init() {
 func setupCmdHandler(cmd *cobra.Command, args []string) {
 	db := database.GetDatabase()
 	db.Setup()
-
-	defer db.Conn.Close()
 }

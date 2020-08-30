@@ -29,19 +29,15 @@ func deleteCmdHandler(cmd *cobra.Command, args []string) {
 	url := args[0]
 	if err := db.BookmarkRepository.DeleteByURL(url); err != nil {
 		fmt.Println(err)
-		defer db.Conn.Close()
 
 		return
 	}
 
 	if err := db.TagRepository.DeleteNotActive(); err != nil {
 		fmt.Println(err)
-		defer db.Conn.Close()
 
 		return
 	}
-
-	defer db.Conn.Close()
 
 	fmt.Println("1 bookmark deleted.")
 }

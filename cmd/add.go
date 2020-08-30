@@ -46,7 +46,6 @@ func addCmdHandler(cmd *cobra.Command, args []string) {
 	}
 
 	bookmark, err := db.BookmarkRepository.Add(url, title, tags, notes)
-	defer db.Conn.Close()
 
 	if err != nil {
 		if len(bookmark.Errors) > 0 {

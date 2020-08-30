@@ -38,7 +38,6 @@ func showCmdHandler(cmd *cobra.Command, args []string) {
 	tags, _ := cmd.Flags().GetStringSlice("tags")
 
 	bookmarks, err := db.BookmarkRepository.List(tags)
-	defer db.Conn.Close()
 
 	if err != nil {
 		fmt.Println(err)

@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"github.com/ashlinchak/bookmarks/lib/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // TagRepository represents the tag's repository contract.

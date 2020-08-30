@@ -4,8 +4,9 @@ import (
 	"os"
 
 	"github.com/ashlinchak/bookmarks/lib/repositories"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // Database holds a connection
@@ -32,9 +33,9 @@ func createConnection() *gorm.DB {
 		dbPath = dbPathEnv
 	}
 
-	db, err := gorm.Open("sqlite3", dbPath)
-
-	db.LogMode(false)
+	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 
 	if err != nil {
 		panic("failed to connect database")

@@ -29,6 +29,4 @@ func tagsCmdHandler(cmd *cobra.Command, args []string) {
 	for _, tag := range tags {
 		fmt.Println(tag.Name)
 	}
-
-	defer db.Conn.Close()
 }
