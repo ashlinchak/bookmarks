@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
+	"regexp"
 
 	"github.com/ashlinchak/bookmarks/lib/database"
 	"github.com/spf13/cobra"
@@ -79,24 +79,8 @@ func getPageTitle(url string) *string {
 	}
 	pageContent := string(dataInBytes)
 
-	// Find a substr
-	titleStartIndex := strings.Index(pageContent, "<title>")
-	if titleStartIndex == -1 {
-		return nil
-	}
-	// The start index of the title is the index of the first
-	// character, the < symbol. We don't want to include
-	// <title> as part of the final value, so let's offset
-	// the index by the number of characers in <title>
-	titleStartIndex += 7
-
-	// Find the index of the closing tag
-	titleEndIndex := strings.Index(pageContent, "</title>")
-	if titleEndIndex == -1 {
-		return nil
-	}
-
-	pageTitle := pageContent[titleStartIndex:titleEndIndex]
+	re := regexp.MustCompile(`<title.*>(.*)<\/title>`)
+	pageTitle := re.FindStringSubmatch(pageContent)[1]
 
 	return &pageTitle
 }
