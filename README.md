@@ -4,9 +4,12 @@ Simple bookmark manager with tags written in Golang. It has CLI and uses SQLite 
 
 ## Install
 
+Install and compile package 
+
 ```sh
 $ go get github.com/ashlinchak/bookmarks
 ```
+Binary will be available in your `GOPATH/bin`. For more details please run `go env` command.
 
 ## Configuration
 
